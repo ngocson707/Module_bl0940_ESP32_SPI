@@ -6,7 +6,7 @@ BL0940 bl0940;
 void setup() {
   Serial.begin(115200);
   bl0940.begin();
-
+  delay(1000);
 }
 
 void loop() {
