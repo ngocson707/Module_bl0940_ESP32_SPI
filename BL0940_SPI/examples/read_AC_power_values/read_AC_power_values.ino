@@ -16,7 +16,7 @@ void loop() {
 
   float current;
   bl0940.getCurrent( &current );
-  Serial.printf("%.2f [A]\n", current );
+  Serial.printf("%.3f [A]\n", current );
 
   float activePower;
   bl0940.getActivePower( &activePower );

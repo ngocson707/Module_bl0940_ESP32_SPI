@@ -35,7 +35,7 @@ void BL0940::begin() {
   Reset();
   setFrequency(50);
   setUpdateRate(400);
-  
+  setNoLoadThreshold(0x1D);
 }
 
 bool BL0940::transferSPI(uint8_t *sendData, uint8_t *receivedData, int dataSize) {
@@ -95,6 +95,10 @@ bool BL0940::readRegister(uint8_t address, uint32_t *data) {
   *data = ((uint32_t)rxData[2] << 16) | ((uint32_t)rxData[3] << 8) | (uint32_t)rxData[4];
   return true;
 }
+
+bool BL0940::setNoLoadThreshold(uint8_t value) {
+  return writeRegister(0x17, value); 
+  }
 
 bool BL0940::getCurrent(float *current) {
   uint32_t data;

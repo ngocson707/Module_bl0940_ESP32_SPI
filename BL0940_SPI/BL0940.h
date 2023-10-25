@@ -16,6 +16,7 @@ public:
     bool setUpdateRate(uint32_t rate);
     bool setOverCurrentDetection(float detectionCurrent);
     bool setCFOutputMode();
+    bool setNoLoadThreshold(uint8_t value);
     bool Reset();
 
 private:
