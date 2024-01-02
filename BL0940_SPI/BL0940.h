@@ -6,6 +6,8 @@ public:
   BL0940();
 
     void begin();
+    bool getCurrentWaveform(float *currentWaveform);
+    bool getVoltageWaveform(float *voltageWaveform);
     bool getCurrent(float *current);
     bool getVoltage(float *voltage);
     bool getActivePower(float *activePower);
@@ -24,12 +26,14 @@ private:
     const uint16_t timeout = 1000;  //Serial timeout[ms]
     const float Vref = 1.218; //[V]
     const float R5 = 3.3;   //[Ohm]
-    const float Rt = 2000.0;  //n:1
-    const float R8 = 20.0;  //[kOhm]
-    const float R9 = 20.0;  //[kOhm]
-    const float R10 = 20.0;  //[kOhm]
-    const float R11 = 20.0;  //[kOhm]
-    const float R12 = 20.0;  //[kOhm]
+    const float Rt = 2000.0;  //n:1 
+  
+    const float R8 = 164.0;  //[kOhm]
+    const float R9 = 164.0;  //[kOhm]
+    const float R10 = 164.0;  //[kOhm]
+    const float R11 = 164.0;  //[kOhm]
+    const float R12 = 164.0;  //[kOhm]
+
     const float R7 = 24.0;  //[Ohm]
     uint16_t Hz = 50;   //[Hz]
     uint16_t updateRate = 400; //[ms]

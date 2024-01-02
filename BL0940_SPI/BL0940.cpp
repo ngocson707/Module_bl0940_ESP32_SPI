@@ -21,7 +21,7 @@
 #define MISO_PIN 19 // Chọn chân MISO (Master In Slave Out)
 #define SCLK_PIN 18 // Chọn chân SCLK (Clock)
 
-SPIClass mySPI(VSPI);
+SPIClass mySPI(SPI);
 
 BL0940::BL0940() {}
 
@@ -30,15 +30,15 @@ void BL0940::begin() {
   pinMode(BL0940_CS, OUTPUT);
   mySPI.begin(SCLK_PIN, MISO_PIN, MOSI_PIN, BL0940_CS);
   mySPI.beginTransaction(SPISettings(900000, MSBFIRST, SPI_MODE1));
-  delay(1000);
   digitalWrite(BL0940_CS, HIGH);
-  Reset();
+  // Reset();
   setFrequency(50);
   setUpdateRate(400);
-  setNoLoadThreshold(0x1D);
+  // setNoLoadThreshold(0x1D);
 }
 
-bool BL0940::transferSPI(uint8_t *sendData, uint8_t *receivedData, int dataSize) {
+bool BL0940::transferSPI(uint8_t *sendData, uint8_t *receivedData, int dataSize) 
+{
   digitalWrite(BL0940_CS, LOW); // Kích hoạt chip BL0940
 
   for (int i = 0; i < dataSize; i++) {
@@ -50,8 +50,8 @@ bool BL0940::transferSPI(uint8_t *sendData, uint8_t *receivedData, int dataSize)
   return true;
 }
 
-uint8_t BL0940::calculateChecksum(uint8_t *rxData, uint8_t state, uint8_t address) {
-
+uint8_t BL0940::calculateChecksum(uint8_t *rxData, uint8_t state, uint8_t address) 
+{
   uint8_t STATE = state;
   uint8_t ADDR = address;
   uint8_t DATA_H = rxData[2];
@@ -100,6 +100,32 @@ bool BL0940::setNoLoadThreshold(uint8_t value) {
   return writeRegister(0x17, value); 
   }
 
+bool BL0940::getCurrentWaveform(float *currentWaveform) {
+  uint32_t data;
+
+  if(false == readRegister(0x01, &data)) {
+    return false;
+  }
+
+  int32_t rowActivePower = (int32_t)(data << 8);
+
+  *currentWaveform = (float)rowActivePower * Vref/ ((324004.0 * R5 * 10000.0) / Rt);
+  return true;
+}
+
+bool BL0940::getVoltageWaveform(float *voltageWaveform) {
+  uint32_t data;
+
+  if(false == readRegister(0x03, &data)) {
+  return false;
+  }
+ 
+  int32_t rowActivePower = (int32_t)(data << 8);
+
+  *voltageWaveform = (float)(rowActivePower * Vref * (R8 + R9 + R10 + R11 + R12) / (79931.0 * R7));
+  return true;
+}
+
 bool BL0940::getCurrent(float *current) {
   uint32_t data;
   if (false == readRegister(0x04, &data)) {
@@ -107,6 +133,10 @@ bool BL0940::getCurrent(float *current) {
   }
 
   *current = (float)data * Vref / ((324004.0 * R5 * 1000.0) / Rt);
+  if(*current > 0.002){
+    *current = *current - 0.0012;
+  }
+
   return true;
 }
 
@@ -115,8 +145,10 @@ bool BL0940::getVoltage(float *voltage) {
   if (false == readRegister(0x06, &data)) {
     return false;
   }
-
-  *voltage = (float)data * Vref * (R8 + R9 + R10 + R11 + R12) / (79931.0 * R7);
+  *voltage = (float)data * Vref * (800) / (79931.0 * R7) - 2.5;
+  if(*voltage <= 5){
+    *voltage = 0;
+  }
   return true;
 }
 
@@ -168,7 +200,8 @@ bool BL0940::getTemperature(float *temperature) {
     return false;
   }
 
-  int16_t rowTemperature = (int16_t)(data << 6) / 64;
+  int16_t rowTemperature = (int16_t)(data << 6) / 64
+  ;
   *temperature = (170.0 / 448.0) * (rowTemperature / 2.0 - 32.0) - 45;
   return true;
 }
@@ -178,22 +211,18 @@ bool BL0940::setFrequency(uint32_t Hz) {
   if (false == readRegister(0x18, &data)) {
     return false;
   }
-
   uint16_t mask = 0b0000001000000000;  //9bit
   if (Hz == 50)
     data &= ~mask;
   else
     data |= mask;
   
-
   if (false == writeRegister(0x18, data)) {
     return false;
   }
-
   if (false == readRegister(0x18, &data)) {
     return false;
   }
-
   if ((data & mask) == 0) {
     Hz = 50;
     // DBG("Set frequency:50Hz");
@@ -290,7 +319,6 @@ bool BL0940::Reset() {
   if (false == writeRegister(0x19, 0x5A5A5A)) {
     return false;
   }
-
   delay(500);
   return true;
 }
