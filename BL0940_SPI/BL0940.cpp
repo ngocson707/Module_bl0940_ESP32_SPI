@@ -31,7 +31,7 @@ void BL0940::begin() {
   mySPI.begin(SCLK_PIN, MISO_PIN, MOSI_PIN, BL0940_CS);
   mySPI.beginTransaction(SPISettings(900000, MSBFIRST, SPI_MODE1));
   digitalWrite(BL0940_CS, HIGH);
-  // Reset();
+  Reset();
   setFrequency(50);
   setUpdateRate(400);
   setNoLoadThreshold(0x1D);
