@@ -141,7 +141,7 @@ bool BL0940::getVoltage(float *voltage) {
   if (false == readRegister(0x06, &data)) {
     return false;
   }
-  *voltage = (float)data * Vref * (800) / (79931.0 * R7) - 2.5;
+  *voltage = (float)data * Vref * (R8 + R9 + R10 + R11 + R12) / (79931.0 * R7);
   return true;
 }
 
