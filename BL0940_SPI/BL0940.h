@@ -16,7 +16,7 @@ public:
     bool getTemperature(float *temperature);
     bool setFrequency(uint32_t Hz);
     bool setUpdateRate(uint32_t rate);
-    bool setOverCurrentDetection(float detectionCurrent);
+    bool setOverCurrentDetection( float detectionCurrent = 15.0 );  //[A] CF pin is high if current is larger than detectionCurrent
     bool setCFOutputMode();
     bool setNoLoadThreshold(uint8_t value);
     bool Reset();
