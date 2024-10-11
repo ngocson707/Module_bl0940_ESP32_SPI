@@ -3,6 +3,7 @@
   - SPI level is set to 900000 Hz (900 kHz)
 ## Connect pin
 |     ESP32   |     BL0940   |
+|:-----------:|:------------:|
 |      23     |      SDI     |
 |      19     |      SDO     |
 |      18     |      SCLK    |
