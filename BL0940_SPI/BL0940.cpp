@@ -34,7 +34,7 @@ void BL0940::begin() {
   // Reset();
   setFrequency(50);
   setUpdateRate(400);
-  // setNoLoadThreshold(0x1D);
+  setNoLoadThreshold(0x1D);
 }
 
 bool BL0940::transferSPI(uint8_t *sendData, uint8_t *receivedData, int dataSize) 
@@ -133,10 +133,6 @@ bool BL0940::getCurrent(float *current) {
   }
 
   *current = (float)data * Vref / ((324004.0 * R5 * 1000.0) / Rt);
-  if(*current > 0.002){
-    *current = *current - 0.0012;
-  }
-
   return true;
 }
 
@@ -146,9 +142,6 @@ bool BL0940::getVoltage(float *voltage) {
     return false;
   }
   *voltage = (float)data * Vref * (800) / (79931.0 * R7) - 2.5;
-  if(*voltage <= 5){
-    *voltage = 0;
-  }
   return true;
 }
 
